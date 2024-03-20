@@ -1,7 +1,7 @@
 <template>
     <div class="p-4 w-3/4 mx-auto">
         <div>
-            <div>
+            <div class="mb-4">
                 <Link :href="route('chats.index')">Chats</Link>
             </div>
         </div>
