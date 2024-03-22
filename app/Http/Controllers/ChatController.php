@@ -32,7 +32,7 @@ class ChatController extends Controller
 
         try {
             DB::beginTransaction();
-            $chat = Chat::firstOrCreate([
+            $chat = Chat::updateOrCreate([
                 'users' => $userIdsString
             ], [
                 'title' => $data['title']

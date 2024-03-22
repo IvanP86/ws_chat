@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="flex items-start">
     <div class="w-3/4 pr-4 mr-4 bg-white border border-gray-200">
       <h3 class="text-gray-700 mb-4 text-lg">
         {{ chat.title ?? "Your chat" }}
