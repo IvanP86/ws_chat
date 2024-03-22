@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Chat\StoreRequest;
 use App\Http\Resources\Chat\ChatResource;
+use App\Http\Resources\Message\MessageResource;
 use App\Http\Resources\User\UserResource;
 use App\Models\Chat;
 use App\Models\User;
@@ -16,7 +17,10 @@ class ChatController extends Controller
     {
         $users = User::where('id', '!=', auth()->id())->get();
         $users = UserResource::collection($users)->resolve();
-        return inertia('Chat/Index', compact('users'));
+
+        $chats = auth()->user()->chats()->has('messages')->get();
+        $chats = ChatResource::collection($chats)->resolve();
+        return inertia('Chat/Index', compact('users', 'chats'));
     }
 
     public function store(StoreRequest $request)
@@ -40,8 +44,19 @@ class ChatController extends Controller
             DB::rollBack();
         }
 
-        $chat = ChatResource::make($chat)->resolve();
+        // $chat = ChatResource::make($chat)->resolve();
 
-        return inertia('Chat/Show', compact('chat'));
+        // return inertia('Chat/Show', compact('chat'));
+        return redirect()->route('chats.show', $chat->id);
+    }
+
+    public function show(Chat $chat)
+    {
+        $users = $chat->users()->get();
+        $messages = $chat->messages()->with('user')->get();
+        $messages = MessageResource::collection($messages)->resolve();
+        $users = UserResource::collection($users)->resolve();
+        $chat = ChatResource::make($chat)->resolve();
+        return inertia('Chat/Show', compact('chat', 'users', 'messages'));
     }
 }
