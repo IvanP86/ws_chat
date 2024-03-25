@@ -53,9 +53,19 @@
 
 <script>
 import Main from "@/Layouts/Main.vue";
+
 export default {
   name: "Show",
   props: ["chat", "users", "messages"],
+
+
+
+  created() {
+      window.Echo.channel('store-message').listen('.store-message', res => {
+           console.log(res);
+    });
+
+  },
 
   data() {
     return {
