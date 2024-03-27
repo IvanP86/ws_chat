@@ -3,13 +3,18 @@
     <div class="w-1/2 pr-4 mr-4 bg-white border border-gray-200">
       <h3 class="text-gray-700 mb-4 text-lg">Chats</h3>
       <div v-if="chats">
-        <div
-          v-for="chat in chats"
-          class="flex items-center pb-4 mb-4 border-b border-gray-300"
-        >
-          <Link :href="route('chats.show', chat.id)" class="flex">
-            <p class="mr-2">{{ chat.id }}</p>
-            <p class="mr-4">{{ chat.title ?? "Your chat" }}</p>
+        <div v-for="chat in chats" class="pb-4 mb-4 border-b border-gray-300">
+
+          <Link :href="route('chats.show', chat.id)">
+          <div class="flex justify-between">
+            <div class="flex">
+              <p class="mr-2">{{ chat.id }}</p>
+              <p >{{ chat.title ?? "Your chat" }}</p>
+            </div>
+            <div v-if="chat.unreadble_count != 0">
+              <p class="text-xs rounded-full bg-sky-500 text-white px-2 py-1">{{ chat.unreadble_count }}</p>
+            </div>
+          </div>
           </Link>
           <!-- <a
             @click.prevent="store(user.id)"
@@ -23,28 +28,24 @@
     <div class="w-1/2 p-4 bg-white border border-gray-200">
       <div class="flex items-center mb-4 justify-between">
         <h3 class="text-gray-700 text-lg">Users</h3>
-        <a v-if="!isGroup" @click.prevent="isGroup = true" class="inline-block bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg" href="#">Make group</a>
+        <a v-if="!isGroup" @click.prevent="isGroup = true"
+          class="inline-block bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg" href="#">Make group</a>
         <div v-if="isGroup" class="flex items-center">
           <input class="h-8 border border-gray-300 rounded-full" type="text" placeholder="group title" v-model="title">
           <a @click.prevent="storeGroup" :class="['inline-block mr-2  text-white text-xs px-3 py-2 rounded-lg',
             this.userIds.length > 1 ? 'bg-green-600' : 'bg-green-300'
           ]" href="#">Go chat</a>
-          <a @click.prevent="refreshUserIds" class="inline-block bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg" href="#">X</a>
+          <a @click.prevent="refreshUserIds" class="inline-block bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg"
+            href="#">X</a>
         </div>
       </div>
       <div v-if="users">
-        <div
-          v-for="user in users"
-          class="flex justify-between items-center pb-4 mb-4 border-b border-gray-300"
-        >
+        <div v-for="user in users" class="flex justify-between items-center pb-4 mb-4 border-b border-gray-300">
           <div class="flex items-center">
             <p class="mr-2">{{ user.id }}</p>
             <p class="mr-4">{{ user.name }}</p>
-            <a
-              @click.prevent="store(user.id)"
-              class="inline-block bg-sky-400 text-white text-xs px-3 py-2 rounded-lg"
-              href="#"
-              >Message</a>
+            <a @click.prevent="store(user.id)" class="inline-block bg-sky-400 text-white text-xs px-3 py-2 rounded-lg"
+              href="#">Message</a>
           </div>
           <div v-if="isGroup">
             <input @click="toggleUsers(user.id)" type="checkbox">
@@ -56,7 +57,7 @@
 </template>
 
 <script>
-import {Link} from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import Main from "@/Layouts/Main.vue";
 export default {
   name: "Index",
@@ -76,12 +77,12 @@ export default {
   layout: Main,
   methods: {
     store(id) {
-        this.$inertia.post('chats', { title: null, users: [id]})
+      this.$inertia.post('chats', { title: null, users: [id] })
     },
 
     storeGroup() {
       if (this.userIds.length < 2) return
-      this.$inertia.post('chats', { title: this.title, users: this.userIds})
+      this.$inertia.post('chats', { title: this.title, users: this.userIds })
     },
 
     toggleUsers(id) {
@@ -101,5 +102,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

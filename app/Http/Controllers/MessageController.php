@@ -31,7 +31,7 @@ class MessageController extends Controller
                     'user_id' => $user_id
                 ]);
             }
-            event(new StoreMessageEvent($message));
+            broadcast(new StoreMessageEvent($message))->toOthers();
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
