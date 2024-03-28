@@ -38,7 +38,7 @@ class StoreMessageStatusEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('users.'. $this->user_id),
+            new PrivateChannel('users.'. $this->user_id),
         ];
     }
 
