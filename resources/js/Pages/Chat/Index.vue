@@ -71,6 +71,16 @@ export default {
     }
   },
 
+  created() {
+    window.Echo.channel('users.' + this.$page.props.auth.user.id).listen('.store-message-status', res =>{
+      this.chats.filter( chat => {
+        if (chat.id === res.chat_id){
+          chat.unreadble_count = res.count
+        }
+      })
+    });
+  },
+
   components: {
     Link
   },

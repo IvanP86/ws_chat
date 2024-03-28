@@ -63,6 +63,10 @@ export default {
   created() {
     window.Echo.channel('store-message.' + this.chat.id).listen('.store-message', res => {
       this.messages.push(res.message)
+      axios.patch('/message_statuses', { 
+        user_id: this.$page.props.auth.user.id,
+        message_id: res.message.id
+       })
     });
 
   },
@@ -92,6 +96,7 @@ export default {
         user_ids: this.userIds
       }).then( res => {
         this.messages.push(res.data)
+        this.body = ''
       })
     },
   },
