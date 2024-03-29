@@ -5,7 +5,10 @@
         {{ chat.title ?? "Your chat" }}
       </h3>
       <div class="mb-4" v-if="messages">
-        <div v-for="message in messages" :class="message.is_owner ? 'text-right' : '' ">
+        <div class="text-center mb-2">
+          <a @click.prevent="getMessages" href="#" class="inline-block bg-sky-600 text-white text-xs px-3 py-2 rounded-lg">Load more</a>
+        </div>
+        <div v-for="message in messages.slice().reverse()" :class="message.is_owner ? 'text-right' : '' ">
           <div :class="['p-4 mb-4 inline-block',
             message.is_owner ? 'bg-green-50 border border-green-100' : ' bg-sky-50 border border-sky-100']">
             <p class="text-sm">{{  message.user_name  }}</p>
@@ -62,7 +65,7 @@ export default {
 
   created() {
     window.Echo.channel('store-message.' + this.chat.id).listen('.store-message', res => {
-      this.messages.push(res.message)
+      this.messages.unshift(res.message)
       if (this.$page.url === '/chats/'. this.chat.id){
         axios.patch('/message_statuses', { 
           user_id: this.$page.props.auth.user.id,
@@ -76,6 +79,7 @@ export default {
   data() {
     return {
       body: "",
+      page: 1
     };
   },
   layout: Main,
@@ -97,9 +101,18 @@ export default {
         body: this.body,
         user_ids: this.userIds
       }).then( res => {
-        this.messages.push(res.data)
+        this.messages.unshift(res.data)
         this.body = ''
       })
+    },
+
+    getMessages(){
+
+      axios.get('/chats/'+this.chat.id+'?page='+ ++this.page)
+      .then( res => {
+        this.messages.push(...res.data)
+      })
+
     },
   },
 };
