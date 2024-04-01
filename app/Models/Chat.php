@@ -17,6 +17,11 @@ class Chat extends Model
         return $this->belongsToMany(User::class, 'chat_user', 'chat_id', 'user_id');
     }
 
+    public function chatWith()
+    {
+        return $this->hasOneThrough(User::class, ChatUser::class, 'chat_id', 'id', 'id', 'user_id')->where('user_id', '!=', auth()->id());
+    }
+
     public function messages()
     {
         return $this->hasMany(Message::class, 'chat_id', 'id');

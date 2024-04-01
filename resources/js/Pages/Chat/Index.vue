@@ -10,7 +10,7 @@
             <div>
               <div class="flex">
                 <p class="mr-2">{{ chat.id }}</p>
-                <p>{{ chat.title ?? "Your chat" }}</p>
+                <p>{{ chat.title }}</p>
               </div>
               <div :class="['flex justify-between items-center p-4',
                 chat.unreadble_count !== 0 ? 'bg-sky-50' : ''
