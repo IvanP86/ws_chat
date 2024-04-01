@@ -5,7 +5,7 @@
         {{ chat.title ?? "Your chat" }}
       </h3>
       <div class="mb-4" v-if="messages">
-        <div class="text-center mb-2">
+        <div v-if="!isLastPage" class="text-center mb-2">
           <a @click.prevent="getMessages" href="#" class="inline-block bg-sky-600 text-white text-xs px-3 py-2 rounded-lg">Load more</a>
         </div>
         <div v-for="message in messages.slice().reverse()" :class="message.is_owner ? 'text-right' : '' ">
@@ -59,7 +59,7 @@ import Main from "@/Layouts/Main.vue";
 
 export default {
   name: "Show",
-  props: ["chat", "users", "messages"],
+  props: ["chat", "users", "messages", "isLastPage"],
 
 
 
@@ -110,7 +110,8 @@ export default {
 
       axios.get('/chats/'+this.chat.id+'?page='+ ++this.page)
       .then( res => {
-        this.messages.push(...res.data)
+        this.messages.push(...res.data.messages)
+        this.$page.props.isLastPage = res.data.is_last_page
       })
 
     },
