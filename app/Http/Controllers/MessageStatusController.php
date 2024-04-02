@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageStatus\UpdateRequest;
 use App\Models\MessageStatus;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class MessageStatusController extends Controller
 {

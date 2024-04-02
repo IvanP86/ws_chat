@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Chat extends Model
 {
@@ -12,6 +13,20 @@ class Chat extends Model
     protected $table = 'chats';
     protected $guarded = [];
 
+    public function readMessages()
+    {
+        $this->unreadableMessageStatuses()->update([
+            'is_read' => true
+        ]);
+    }
+    public function getUsers()
+    {
+        return $this->users()->get();
+    }
+    public function getMessagesWithPagination($page): LengthAwarePaginator
+    {
+        return $this->messages()->with('user')->orderByDesc('created_at')->paginate(5, '*', 'page', $page);
+    }
     public function users()
     {
         return $this->belongsToMany(User::class, 'chat_user', 'chat_id', 'user_id');

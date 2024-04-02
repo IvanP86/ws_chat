@@ -8,17 +8,15 @@ use App\Http\Resources\Message\MessageResource;
 use App\Http\Resources\User\UserResource;
 use App\Models\Chat;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
     public function index()
     {
-        $users = User::where('id', '!=', auth()->id())->get();
+        $users = User::anotherUsers();
         $users = UserResource::collection($users)->resolve();
-
-        $chats = auth()->user()->chats()->has('messages')->with(['lastMessage', 'chatWith'])->withCount('unreadableMessageStatuses')->get();
+        $chats = auth()->user()->getUserChats();
         $chats = ChatResource::collection($chats)->resolve();
         return inertia('Chat/Index', compact('users', 'chats'));
     }
@@ -42,23 +40,20 @@ class ChatController extends Controller
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
+            return redirect()->back()->withErrors([
+                'error' => $exception->getMessage()
+            ]);
         }
-
-        // $chat = ChatResource::make($chat)->resolve();
-
-        // return inertia('Chat/Show', compact('chat'));
         return redirect()->route('chats.show', $chat->id);
     }
 
     public function show(Chat $chat)
     {
         $page = request('page') ?? 1;
-        $users = $chat->users()->get();
-        $messages = $chat->messages()->with('user')->orderByDesc('created_at')->paginate(5, '*', 'page', $page);
-        $chat->unreadableMessageStatuses()->update([
-            'is_read' => true
-        ]);
-        $isLastPage = (int)$page === (int)$messages->lastPage();
+        $users = $chat->getUsers();
+        $messages = $chat->getMessagesWithPagination($page);
+        $chat->readMessages();
+        $isLastPage = $messages->onLastPage();
         $messages = MessageResource::collection($messages)->resolve();
         if ($page > 1) {
             return response()->json([

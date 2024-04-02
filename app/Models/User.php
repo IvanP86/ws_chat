@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -43,8 +44,18 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function chats()
+    public function chats(): BelongsToMany
     {
         return $this->belongsToMany(Chat::class, 'chat_user', 'user_id', 'chat_id');
+    }
+
+    public function getUserChats()
+    {
+        return $this->chats()->has('messages')->with(['lastMessage', 'chatWith'])->withCount('unreadableMessageStatuses')->get();
+    }
+
+    public function scopeAnotherUsers()
+    {
+        return $this->where('id', '!=', auth()->id())->get();
     }
 }
