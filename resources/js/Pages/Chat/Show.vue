@@ -28,7 +28,7 @@
               v-model="body"
             />
           </div>
-          <div>
+          <div v-if="this.body.length > 0">
             <a
               @click.prevent="store()"
               class="inline-block bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg"
@@ -66,7 +66,7 @@ export default {
   created() {
     window.Echo.channel('store-message.' + this.chat.id).listen('.store-message', res => {
       this.messages.unshift(res.message)
-      if (this.$page.url === '/chats/'. this.chat.id){
+      if (this.$page.url === '/chats/' + this.chat.id){
         axios.patch('/message_statuses', { 
           user_id: this.$page.props.auth.user.id,
           message_id: res.message.id

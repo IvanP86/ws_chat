@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\StoreMessageAction;
+use App\DTO\MessageDTObuilder;
 use App\Events\StoreMessageEvent;
 use App\Http\Requests\Message\StoreRequest;
 use App\Http\Resources\Message\MessageResource;
 use App\Jobs\StoreMessageStatusJob;
 use App\Models\Message;
+use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request, MessageDTObuilder $builder, StoreMessageAction $storeMessageAction)
     {
-        $data = $request->validated();
-
-        $data['user_id'] = auth()->id();
-        $message = Message::create([
-            'chat_id' => $data['chat_id'],
-            'user_id' => auth()->id(),
-            'body' => $data['body']
-        ]);
+        $data = $builder->from($request);
+        $message = $storeMessageAction->handle($data);
         StoreMessageStatusJob::dispatch($data, $message)->onQueue('store_messages');
         broadcast(new StoreMessageEvent($message))->toOthers();
         return MessageResource::make($message)->resolve();
