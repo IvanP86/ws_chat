@@ -22,10 +22,7 @@ class ChatController extends Controller
     }
     public function index()
     {
-        // $users = User::anotherUsers();
-        // $users = UserResource::collection($users)->resolve();
         $users = $this->userService->getAnotherUsers();
-        // dd($users);
         $chats = auth()->user()->getUserChats();
         $chats = ChatResource::collection($chats)->resolve();
         return inertia('Chat/Index', compact('users', 'chats'));
@@ -34,30 +31,8 @@ class ChatController extends Controller
     // public function store(Request $request, ChatDTObuilder $builder)
     public function store(Request $request, ChatDTObuilder $builder)
     {
-        //  dd($builder->from($request));
-        // dd($builder->title);
         $data = $builder->from($request);
 
-        // $userIds = array_merge($data->users, [auth()->id()]);
-        // sort($userIds);
-        // $userIdsString = implode('-', $userIds);
-
-        // try {
-        //     DB::beginTransaction();
-        //     $chat = Chat::updateOrCreate([
-        //         'users' => $userIdsString
-        //     ], [
-        //         'title' => $data->title
-        //     ]);
-
-        //     $chat->users()->sync($userIds);
-        //     DB::commit();
-        // } catch (\Exception $exception) {
-        //     DB::rollBack();
-        //     return redirect()->back()->withErrors([
-        //         'error' => $exception->getMessage()
-        //     ]);
-        // }
         return redirect()->route('chats.show', $this->createChatAction->handle($data));
     }
 

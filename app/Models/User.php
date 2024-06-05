@@ -53,7 +53,6 @@ class User extends Authenticatable
     {
         return $this->chats()->has('messages')->with(['lastMessage', 'chatWith'])->withCount('unreadableMessageStatuses')->get();
     }
-
     public function scopeAnotherUsers()
     {
         return $this->where('id', '!=', auth()->id())->get();

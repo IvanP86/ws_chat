@@ -34,7 +34,8 @@ class Chat extends Model
 
     public function chatWith()
     {
-        return $this->hasOneThrough(User::class, ChatUser::class, 'chat_id', 'id', 'id', 'user_id')->where('user_id', '!=', auth()->id());
+        // return $this->hasOneThrough(User::class, ChatUser::class, 'chat_id', 'id', 'id', 'user_id')->where('user_id', '!=', auth()->id());
+         return $this->hasOneThrough(User::class, ChatUser::class, 'chat_id', 'id', 'id', 'user_id');
     }
 
     public function messages()
@@ -45,6 +46,11 @@ class Chat extends Model
     public function unreadableMessageStatuses()
     {
         return $this->hasMany(MessageStatus::class, 'chat_id', 'id')->where('user_id', auth()->id())->where('is_read', false);
+    }
+
+    public function MessageStatuses()
+    {
+        return $this->hasMany(MessageStatus::class, 'chat_id', 'id');
     }
 
     public function lastMessage()
