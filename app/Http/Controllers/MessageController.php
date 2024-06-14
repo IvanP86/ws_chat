@@ -8,8 +8,6 @@ use App\Events\StoreMessageEvent;
 use App\Http\Requests\Message\StoreRequest;
 use App\Http\Resources\Message\MessageResource;
 use App\Jobs\StoreMessageStatusJob;
-use App\Models\Message;
-use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {

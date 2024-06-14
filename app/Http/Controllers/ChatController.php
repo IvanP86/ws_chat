@@ -4,31 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Actions\CreateChatAction;
 use App\DTO\ChatDTObuilder;
-use App\Http\Requests\Chat\StoreRequest;
 use App\Http\Resources\Chat\ChatResource;
 use App\Http\Resources\Message\MessageResource;
 use App\Http\Resources\User\UserResource;
 use App\Models\Chat;
-use App\Models\User;
+use App\Services\ChatService;
 use App\Services\UserService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
 
-    public function __construct(public readonly CreateChatAction $createChatAction, public readonly UserService $userService)
+    public function __construct(public readonly CreateChatAction $createChatAction, public readonly UserService $userService, public readonly ChatService $chatService)
     {
     }
     public function index()
     {
         $users = $this->userService->getAnotherUsers();
         $chats = auth()->user()->getUserChats();
+        $chats = $this->chatService->transformChatsTitleAndCountUreadableMessages($chats);
         $chats = ChatResource::collection($chats)->resolve();
         return inertia('Chat/Index', compact('users', 'chats'));
     }
 
-    // public function store(Request $request, ChatDTObuilder $builder)
     public function store(Request $request, ChatDTObuilder $builder)
     {
         $data = $builder->from($request);
@@ -41,7 +39,7 @@ class ChatController extends Controller
         $page = request('page') ?? 1;
         $users = $chat->getUsers();
         $messages = $chat->getMessagesWithPagination($page);
-        $chat->readMessages();
+        $this->chatService->readMessages($chat);
         $isLastPage = $messages->onLastPage();
         $messages = MessageResource::collection($messages)->resolve();
         if ($page > 1) {

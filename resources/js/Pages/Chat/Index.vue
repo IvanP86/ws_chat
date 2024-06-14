@@ -27,12 +27,6 @@
             </div>
           </div>
           </Link>
-          <!-- <a
-            @click.prevent="store(user.id)"
-            class="inline-block bg-sky-400 text-white text-xs px-3 py-2 rounded-lg"
-            href="#"
-            >Message</a
-          > -->
         </div>
       </div>
     </div>

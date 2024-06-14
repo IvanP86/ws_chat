@@ -17,10 +17,10 @@ class Message extends Model
         return $this->created_at->diffForHumans();
     }
 
-    public function getIsOwnerAttribute()
-    {
-        return (int) $this->user_id === (int) auth()->id();
-    }
+    // public function getIsOwnerAttribute()
+    // {
+    //     return (int) $this->user_id === (int) auth()->id();
+    // }
 
     public function user()
     {

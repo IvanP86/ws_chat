@@ -13,12 +13,6 @@ class Chat extends Model
     protected $table = 'chats';
     protected $guarded = [];
 
-    public function readMessages()
-    {
-        $this->unreadableMessageStatuses()->update([
-            'is_read' => true
-        ]);
-    }
     public function getUsers()
     {
         return $this->users()->get();
@@ -32,9 +26,8 @@ class Chat extends Model
         return $this->belongsToMany(User::class, 'chat_user', 'chat_id', 'user_id');
     }
 
-    public function chatWith()
+    public function chatUsers()
     {
-        // return $this->hasOneThrough(User::class, ChatUser::class, 'chat_id', 'id', 'id', 'user_id')->where('user_id', '!=', auth()->id());
          return $this->hasOneThrough(User::class, ChatUser::class, 'chat_id', 'id', 'id', 'user_id');
     }
 
@@ -43,12 +36,7 @@ class Chat extends Model
         return $this->hasMany(Message::class, 'chat_id', 'id');
     }
 
-    public function unreadableMessageStatuses()
-    {
-        return $this->hasMany(MessageStatus::class, 'chat_id', 'id')->where('user_id', auth()->id())->where('is_read', false);
-    }
-
-    public function MessageStatuses()
+    public function messageStatuses()
     {
         return $this->hasMany(MessageStatus::class, 'chat_id', 'id');
     }

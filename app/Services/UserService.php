@@ -9,7 +9,7 @@ class UserService
 {
     public function getAnotherUsers(): array
     {
-        $users = User::anotherUsers();
+        $users = User::where('id', '!=', auth()->id())->get();
         $users = UserResource::collection($users)->resolve();
 
         return $users;
