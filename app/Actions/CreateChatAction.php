@@ -23,7 +23,7 @@ final class CreateChatAction
                 'title' => $data->title
             ]);
 
-            $chat->users()->sync($userIds);
+            $chat->chatUsers()->sync($userIds);
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();

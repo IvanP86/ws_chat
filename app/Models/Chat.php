@@ -15,20 +15,15 @@ class Chat extends Model
 
     public function getUsers()
     {
-        return $this->users()->get();
+        return $this->chatUsers()->get();
     }
     public function getMessagesWithPagination($page): LengthAwarePaginator
     {
         return $this->messages()->with('user')->orderByDesc('created_at')->paginate(5, '*', 'page', $page);
     }
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'chat_user', 'chat_id', 'user_id');
-    }
-
     public function chatUsers()
     {
-         return $this->hasOneThrough(User::class, ChatUser::class, 'chat_id', 'id', 'id', 'user_id');
+        return $this->belongsToMany(User::class);
     }
 
     public function messages()

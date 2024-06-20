@@ -30,7 +30,6 @@ class ChatController extends Controller
     public function store(Request $request, ChatDTObuilder $builder)
     {
         $data = $builder->from($request);
-
         return redirect()->route('chats.show', $this->createChatAction->handle($data));
     }
 
