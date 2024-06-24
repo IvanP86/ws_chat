@@ -20,16 +20,18 @@ class ChatController extends Controller
     }
     public function index()
     {
-        $users = $this->userService->getAnotherUsers();
+        $users = $this->userService->getAnotherUsers(auth()->id());
         $chats = auth()->user()->getUserChats();
-        $chats = $this->chatService->transformChatsTitleAndCountUreadableMessages($chats);
+        $chats = $this->chatService->transformChatsTitleAndCountUreadableMessages($chats, auth()->id());
         $chats = ChatResource::collection($chats)->resolve();
+
         return inertia('Chat/Index', compact('users', 'chats'));
     }
 
     public function store(Request $request, ChatDTObuilder $builder)
     {
         $data = $builder->from($request);
+
         return redirect()->route('chats.show', $this->createChatAction->handle($data));
     }
 
@@ -38,10 +40,11 @@ class ChatController extends Controller
         $page = request('page') ?? 1;
         $users = $chat->getUsers();
         $messages = $chat->getMessagesWithPagination($page);
-        $this->chatService->readMessages($chat);
+        $this->chatService->readMessages($chat, auth()->id());
         $isLastPage = $messages->onLastPage();
         $messages = MessageResource::collection($messages)->resolve();
         if ($page > 1) {
+
             return response()->json([
                 'is_last_page' => $isLastPage,
                 'messages' => $messages
@@ -49,6 +52,7 @@ class ChatController extends Controller
         }
         $users = UserResource::collection($users)->resolve();
         $chat = ChatResource::make($chat)->resolve();
+
         return inertia('Chat/Show', compact('chat', 'users', 'messages', 'isLastPage'));
     }
 }

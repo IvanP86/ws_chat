@@ -3,83 +3,68 @@
 namespace Tests\Feature\Chat;
 
 use App\Models\Chat;
-use App\Models\ChatUser;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Inertia\Testing\AssertableInertia as Assert;
 
 class ChatTest extends TestCase
 {
     use RefreshDatabase;
-    public function test_chat_creation()
+
+    private User $user;
+    private User $user2;
+    private User $user3;
+
+
+    public function setUp(): void
     {
-        $user = User::factory()->create();
-        $user2 = User::factory()->create();
-
-        $this->assertDatabaseHas('users', [
-            'id' => $user->id,
+        parent::setUp();
+        $this->user = User::factory()->create();
+        $this->user2 = User::factory()->create();
+        $this->user3 = User::factory()->create();
+    }
+    public function test_create_chat()
+    {
+        $this->actingAs($this->user)->json('POST', route('chats.store'), [
+            'title' => 'Test chat',
+            'users' => [$this->user2->id, $this->user3->id]
         ]);
-
-        $this->assertDatabaseHas('users', [
-            'id' => $user2->id
-        ]);
-
-        $chat = Chat::create([
-            'users' => $user->id . '-' . $user2->id
-        ]);
-
         $this->assertDatabaseHas('chats', [
-            'id' => $chat->id
-        ]);
-
-        ChatUser::insert([
-            [
-                'chat_id' => $chat->id,
-                'user_id' => $user->id
-            ],
-            [
-                'chat_id' => $chat->id,
-                'user_id' => $user2->id
-            ]
+            'title' => 'Test chat',
+            'users' => $this->user->id . '-' . $this->user2->id . '-' . $this->user3->id
         ]);
     }
 
-    public function test_message_create()
+    public function test_add_message_to_chat()
     {
-        $user = User::factory()->create();
-        $user2 = User::factory()->create();
         $chat = Chat::factory()->create([
-            'users' => $user->id . '-' . $user2->id
+            'users' => $this->user->id . '-' . $this->user2->id
         ]);
-        $message = Message::create([
+        $this->actingAs($this->user)->json('POST', route('messages.store'), [
             'chat_id' => $chat->id,
-            'user_id' => $user->id,
-            'body' => 'Test body'
+            'user_ids' => [$this->user->id, $this->user2->id],
+            'body' => 'TestBody'
         ]);
 
         $this->assertDatabaseHas('messages', [
-            'id' => $message->id,
-            'body' => $message->body
+            'chat_id' => $chat->id,
+            'body' => 'TestBody'
         ]);
     }
 
-    public function test_show_message()
+    public function test_show_message_in_chat()
     {
-        $user = User::factory()->create();
-        $user2 = User::factory()->create();
         $chat = Chat::factory()->create([
-            'users' => $user->id . '-' . $user2->id
+            'users' => $this->user->id . '-' . $this->user2->id
         ]);
         $message = Message::factory()->create([
             'chat_id' => $chat->id,
-            'user_id' => $user->id,
+            'user_id' => $this->user->id,
         ]);
-        $response = $this->actingAs($user2)->get('/chats/' . $chat->id);
 
-        $response->assertInertia(
+        $this->actingAs($this->user2)->json('GET', route('chats.show', $chat->id))->assertInertia(
             fn (Assert $page) => $page
                 ->has(
                     'messages',

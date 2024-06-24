@@ -17,7 +17,6 @@ class ChatResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            // 'title' => $this->title ?? 'With ' . $this->chatWith()->implode('name', ', '),
             'title' => $this->title,
             'users' => $this->users,
             'chat_with' => $this->chatUsers()->implode('name', ', '),

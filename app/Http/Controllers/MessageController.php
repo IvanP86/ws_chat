@@ -11,12 +11,13 @@ use App\Jobs\StoreMessageStatusJob;
 
 class MessageController extends Controller
 {
-    public function store(StoreRequest $request, MessageDTObuilder $builder, StoreMessageAction $storeMessageAction)
+    public function store(StoreRequest $request, MessageDTObuilder $builder, StoreMessageAction $storeMessageAction): array
     {
         $data = $builder->from($request);
         $message = $storeMessageAction->handle($data);
         StoreMessageStatusJob::dispatch($data, $message)->onQueue('store_messages');
         broadcast(new StoreMessageEvent($message))->toOthers();
+
         return MessageResource::make($message)->resolve();
     }
 }

@@ -27,10 +27,12 @@ final class CreateChatAction
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
+            
             return redirect()->back()->withErrors([
                 'error' => $exception->getMessage()
             ]);
         }
+
         return $chat->id;
     }
 }

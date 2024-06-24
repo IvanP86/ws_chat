@@ -7,11 +7,10 @@ use App\Models\User;
 
 class UserService
 {
-    public function getAnotherUsers(): array
+    public function getAnotherUsers($id): array
     {
-        $users = User::where('id', '!=', auth()->id())->get();
-        $users = UserResource::collection($users)->resolve();
+        $users = User::where('id', '!=', $id)->get();
 
-        return $users;
+        return UserResource::collection($users)->resolve();
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -49,7 +51,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Chat::class, 'chat_user', 'user_id', 'chat_id');
     }
 
-    public function getUserChats()
+    public function getUserChats(): Collection
     {
         return $this->chats()->has('messages')->with(['lastMessage', 'chatUsers'])->get();
     }
