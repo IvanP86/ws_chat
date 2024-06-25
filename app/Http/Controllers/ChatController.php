@@ -20,9 +20,11 @@ class ChatController extends Controller
     }
     public function index()
     {
-        $users = $this->userService->getAnotherUsers(auth()->id());
-        $chats = auth()->user()->getUserChats();
-        $chats = $this->chatService->transformChatsTitleAndCountUreadableMessages($chats, auth()->id());
+        /** @var \App\Models\User $user **/
+        $user = auth()->user();
+        $users = $this->userService->getAnotherUsers($user->id);
+        $chats = $user->getUserChats();
+        $chats = $this->chatService->transformChatsTitleAndCountUreadableMessages($chats, $user->id);
         $chats = ChatResource::collection($chats)->resolve();
 
         return inertia('Chat/Index', compact('users', 'chats'));
